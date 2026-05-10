@@ -1,24 +1,30 @@
 # Python
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
 *.pyd
 
-# Virtual Environment
+# Virtual env
 venv/
+.env/
+
+# Environment variables
 .env
+
+# macOS
+.DS_Store
+
+# Alembic cache
+.alembic
+
+# Pytest
+.pytest_cache/
+
+# VSCode
+.vscode/
+
+# JetBrains
+.idea/
 
 # Logs
 *.log
-*.txt
-
-# IDE
-.idea/
-.vscode/
-
-# OS
-.DS_Store
-
-# FastAPI specific
-*.db
-*.sqlite3

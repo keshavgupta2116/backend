@@ -14,3 +14,5 @@ def read_root():
 def PingPong(payload: Data):
     if payload.data == "ping":
         return {"ping": "pong"}
+    else:
+        return {"message": f"should have sent ping instead of {payload.data} :("}

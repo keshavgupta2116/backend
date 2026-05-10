@@ -24,6 +24,8 @@ FastAPI backend for Evenup. Handles auth, expenses, group management, balance ca
 
 ## Project Structure
 
+this is not the final structure and can or will be changed 
+
 ```
 evenup-api/
 ├── app/

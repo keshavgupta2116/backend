@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.env
+
+# Logs
+*.log
+*.txt
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# FastAPI specific
+*.db
+*.sqlite3

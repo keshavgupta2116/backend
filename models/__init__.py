@@ -1,4 +1,4 @@
-from models.users import User
+from models.user import User
 from models.personal_expenses import PersonalExpense
 from models.groups import Group
 from models.group_members import GroupMember

@@ -17,3 +17,6 @@ class Group(Base):
     creator = relationship("User", back_populates="groups")
     members = relationship("GroupMember", back_populates="group")
     expenses = relationship("GroupExpense", back_populates="group")
+    
+    personal_expenses = relationship("PersonalExpense",back_populates="group")
+    settlements = relationship("Settlement",back_populates="group")

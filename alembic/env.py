@@ -15,9 +15,16 @@ config = context.config
 
 load_dotenv()
 
+database_url = os.getenv("DATABASE_URL")
+
+database_url = database_url.replace(
+    "postgresql+asyncpg",
+    "postgresql+psycopg2"
+)
+
 config.set_main_option(
     "sqlalchemy.url",
-    os.getenv("DATABASE_URL")
+    database_url
 )
 
 # this is the Alembic Config object, which provides

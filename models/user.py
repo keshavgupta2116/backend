@@ -27,6 +27,8 @@ class User(Base):
     
     # relationships
     
+    personal_expenses = relationship("PersonalExpense",back_populates="user")
+    
     '''All groups created by this user
     Example: user.groups -> [Group1, Group2]'''
     groups = relationship("Group", back_populates="creator") 

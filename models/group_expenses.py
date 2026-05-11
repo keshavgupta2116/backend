@@ -20,3 +20,5 @@ class GroupExpense(Base):
     group = relationship("Group", back_populates="expenses")
     payer = relationship("User", foreign_keys=[paid_by], back_populates="expenses_paid")
     splits = relationship("ExpenseSplit", back_populates="expense")
+    
+    personal_expenses = relationship("PersonalExpense",back_populates="group_expense")

@@ -6,7 +6,7 @@ class GroupMemberRepository:
       def __init__(self, session: AsyncSession):
             self.session = session
 
-      async def add_member(
+      async def add(
                   self,
                   user_id: str,
                   group_id: str
@@ -28,13 +28,13 @@ class GroupMemberRepository:
             
             return await self.session.execute(select(GroupMember).where(GroupMember.user_id == user_id, GroupMember.group_id == group_id))
       
-      async def list_members(
+      async def list(
                   self,
                   group_id: str
       ):
             return await self.session.execute(select(GroupMember).where(GroupMember.group_id == group_id))
       
-      async def remove_member(
+      async def remove(
                   self,
                   member: GroupMember
       ):    

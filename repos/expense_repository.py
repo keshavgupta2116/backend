@@ -7,7 +7,7 @@ class ExoenseRepository:
       def __init__(self, session: AsyncSession):
             self.session = session
 
-      async def create_expense(
+      async def create(
                   self,
                   data: dict,
                   split: dict
@@ -40,7 +40,7 @@ class ExoenseRepository:
       ):
             return await self.session.execute(select(GroupExpense).where(GroupExpense.group_id == group_id))
       
-      async def update_expese(
+      async def update(
                   self,
                   expense: GroupExpense,
                   data: dict
@@ -54,7 +54,7 @@ class ExoenseRepository:
 
             return expense
       
-      async def delete_expense(
+      async def delete(
                   self,
                   expense: GroupExpense
       ):

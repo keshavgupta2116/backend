@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select #type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession #type: ignore
 
 from models.personal_expenses import PersonalExpense
 

@@ -3,21 +3,21 @@ from uuid import UUID
 from decimal import Decimal
 from pydantic import BaseModel
 
-class personalExpenseCreate(BaseModel):
+class PersonalExpenseCreate(BaseModel):
     title : str 
     amount : Decimal
     category :str |None = None
     date : datetime |None = None
     notes : str | None = None
 
-class personalExpenseUpdate(BaseModel):
+class PersonalExpenseUpdate(BaseModel):
     title : str | None = None
     amount : Decimal | None = None
     category :str |None = None
     date : datetime |None = None
     notes : str | None = None
 
-class personalExpenseResponse(BaseModel):
+class PersonalExpenseResponse(BaseModel):
     id : UUID
     user_id : UUID
     group_id : UUID | None = None

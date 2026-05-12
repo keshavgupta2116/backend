@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.personal_expenses import PersonalExpense 
 
-class personalExpenseReopsitory:
+class PersonalExpenseReopsitory:
    def __init__(self , session: AsyncSession):
     self.session = session  
 

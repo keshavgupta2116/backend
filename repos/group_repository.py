@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,7 +26,7 @@ class GroupRepository:
       
       async def get_by_id(
                   self,
-                  group_id: uuid
+                  group_id: UUID
       ) -> Group | None:
             
             result = await self.session.execute(select(Group).where(Group.id == group_id))
@@ -35,7 +35,7 @@ class GroupRepository:
       
       async def get_user_groups(
                   self,
-                  user_id: uuid
+                  user_id: UUID
       ) -> list[Group]:
             
             result = await self.session.execute(select(Group).join(GroupMember).where(GroupMember.user_id == user_id))

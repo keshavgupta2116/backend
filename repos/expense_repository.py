@@ -1,16 +1,19 @@
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.group_expenses import GroupExpense
-from models.expense_splits import ExpenseSplit
 
-class ExoenseRepository:
+from models.expense_splits import ExpenseSplit
+from models.group_expenses import GroupExpense
+
+class ExpenseRepository:
       def __init__(self, session: AsyncSession):
             self.session = session
 
       async def create(
                   self,
                   data: dict,
-                  split: dict
+                  split: dict[UUID, float]
       ) -> GroupExpense:
             
             expense = GroupExpense(**data)
@@ -19,7 +22,11 @@ class ExoenseRepository:
             await self.session.flush()
 
             for user_id, amount in split.items():
-                  split = ExpenseSplit(expense_id = expense.id, user_id = user_id, amount = amount)
+                  split = ExpenseSplit(
+                        expense_id = expense.id, 
+                        user_id = user_id, 
+                        amount = amount
+                  )
                   await self.session.add(split)
 
             await self.session.commit()
@@ -29,16 +36,19 @@ class ExoenseRepository:
       
       async def get_by_id(
                   self,
-                  expense_id: str
+                  expense_id: UUID
       ) -> GroupExpense:
             
             return await self.session.execute(select(GroupExpense).where(GroupExpense.id == expense_id))
       
       async def list_by_group(
                   self,
-                  group_id: str
-      ):
-            return await self.session.execute(select(GroupExpense).where(GroupExpense.group_id == group_id))
+                  group_id: UUID
+      ) -> list[GroupExpense]:
+            
+            groups = await self.session.execute(select(GroupExpense).where(GroupExpense.group_id == group_id))
+
+            return list(groups.scalars().all())
       
       async def update(
                   self,
@@ -57,6 +67,15 @@ class ExoenseRepository:
       async def delete(
                   self,
                   expense: GroupExpense
-      ):
+      ) -> None:
             await self.session.delete(expense)
             await self.session.commit()
+
+      async def get_splits(
+                  self,
+                  expense_id: UUID
+      ) -> list[ExpenseSplit]:
+            
+            result = await self.session.execute(select(ExpenseSplit).where(ExpenseSplit.expense_id == expense_id))
+
+            return list(result.scalars().all())

@@ -20,7 +20,7 @@ class SettlementResponse(BaseModel):
 
 
 class SettlementUpdate(BaseModel):
-    # we only need amount and to update reciver we delete the settlement and create new one
+    # we only need amount and to update receiver we delete the settlement and create new one
     amount: Decimal | None = Field(default=None, gt=0)
 
 

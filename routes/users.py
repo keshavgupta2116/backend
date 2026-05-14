@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends , status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user, get_db
@@ -33,8 +33,11 @@ async def update_current_user(
 
     return updated_user
 
+
 @router.delete("/me", status_code=status.HTTP_200_OK)
-async def delete_account(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def delete_account(
+    user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+):
     user.is_active = False
     await UserRepository(db).update_user(user)
     return {"message": "Account deactivated successfully"}

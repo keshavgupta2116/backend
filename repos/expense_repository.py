@@ -11,13 +11,15 @@ class ExpenseRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, expense: GroupExpense, splits: list[ExpenseSplit]) -> GroupExpense:
+    async def create(
+        self, expense: GroupExpense, splits: list[ExpenseSplit]
+    ) -> GroupExpense:
 
         self.session.add(expense)
-        
+
         for split in splits:
             self.session.add(split)
-        
+
         await self.session.commit()
         await self.session.refresh(expense)
 

@@ -41,7 +41,7 @@ async def get_current_user(
     repo = UserRepository(db)
 
     user = await repo.get_user_by_id(UUID(user_id))
-    
+
     if not user or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

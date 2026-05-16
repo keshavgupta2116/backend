@@ -43,14 +43,18 @@ async def list_groups(db: AsyncSession, user_id: UUID) -> dict:
     }
 
 
-async def get_group(db: AsyncSession, group_id: UUID) -> dict:
+async def get_group(db: AsyncSession, group_id: UUID, user_id: UUID) -> dict:
 
     repo = GroupRepository(db)
+    member_repo = GroupMemberRepository(db)
 
     group = await repo.get_by_id(group_id)
-
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
+
+    member = await member_repo.get(user_id, group_id)
+    if not member:
+        raise HTTPException(status_code=403, detail="Member is not authorised")
 
     return {"message": "Group found", "group": GroupResponse.model_validate(group)}
 

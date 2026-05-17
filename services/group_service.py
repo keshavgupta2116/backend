@@ -99,7 +99,9 @@ async def delete_group(group_id: UUID, user_id: UUID, db: AsyncSession) -> dict:
     return {"message": "Group deleted successfully"}
 
 
-async def add_member(group_id: UUID, user_id: UUID, db: AsyncSession, current_user_id: UUID) -> dict:
+async def add_member(
+    group_id: UUID, user_id: UUID, db: AsyncSession, current_user_id: UUID
+) -> dict:
 
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
@@ -107,7 +109,7 @@ async def add_member(group_id: UUID, user_id: UUID, db: AsyncSession, current_us
     group = await repo.get_by_id(group_id)
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
-    
+
     if not await member_repo.is_member(current_user_id, group_id):
         raise HTTPException(status_code=403, detail="Member is not authorised")
 
@@ -125,7 +127,9 @@ async def add_member(group_id: UUID, user_id: UUID, db: AsyncSession, current_us
     }
 
 
-async def remove_member(group_id: UUID, user_id: UUID, db: AsyncSession, current_user_id: UUID) -> dict:
+async def remove_member(
+    group_id: UUID, user_id: UUID, db: AsyncSession, current_user_id: UUID
+) -> dict:
 
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
@@ -133,7 +137,7 @@ async def remove_member(group_id: UUID, user_id: UUID, db: AsyncSession, current
     group = await repo.get_by_id(group_id)
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
-    
+
     if not await member_repo.is_member(current_user_id, group_id):
         raise HTTPException(status_code=403, detail="Member is not authorised")
 
@@ -154,7 +158,7 @@ async def list_members(group_id: UUID, db: AsyncSession, current_user_id: UUID) 
     group = await repo.get_by_id(group_id)
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
-    
+
     if not await member_repo.is_member(current_user_id, group_id):
         raise HTTPException(status_code=403, detail="Member is not authorised")
 

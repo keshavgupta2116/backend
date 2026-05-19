@@ -1,12 +1,12 @@
 from uuid import UUID
 
 from fastapi import HTTPException
-from repos.group_member_repository import GroupMemberRepository
-from repos.group_repository import GroupRepository
-from repos.user_repository import UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.groups import Group
+from repository.group_member_repository import GroupMemberRepository
+from repository.group_repository import GroupRepository
+from repository.user_repository import UserRepository
 from schemas.common import SuccessResponse
 from schemas.groups import GroupCreate, GroupMemberResponse, GroupResponse, GroupUpdate
 

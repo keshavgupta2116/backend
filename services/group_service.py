@@ -6,12 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.groups import Group
 from repos.group_member_repository import GroupMemberRepository
 from repos.group_repository import GroupRepository
+from schemas.common import SuccessResponse
 from schemas.groups import GroupCreate, GroupMemberResponse, GroupResponse, GroupUpdate
 
 
 async def create_group(
     group_data: GroupCreate, db: AsyncSession, user_id: UUID
-) -> dict:
+) -> SuccessResponse[GroupResponse]:
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
 
@@ -21,13 +22,15 @@ async def create_group(
 
     await member_repo.add(created_group.id, user_id)
 
-    return {
-        "message": "Group created successfully",
-        "group": GroupResponse.model_validate(created_group),
-    }
+    return SuccessResponse(
+        message="Group created successfully",
+        data=GroupResponse.model_validate(created_group),
+    )
 
 
-async def list_groups(db: AsyncSession, user_id: UUID) -> dict:
+async def list_groups(
+    db: AsyncSession, user_id: UUID
+) -> SuccessResponse[list[GroupResponse]]:
     repo = GroupRepository(db)
 
     groups = await repo.get_user_groups(user_id)
@@ -35,13 +38,15 @@ async def list_groups(db: AsyncSession, user_id: UUID) -> dict:
     if not groups:
         raise HTTPException(status_code=404, detail="Group not found")
 
-    return {
-        "message": "Group fetched successfully",
-        "groups": [GroupResponse.model_validate(g) for g in groups],
-    }
+    return SuccessResponse(
+        message="Group fetched successfully",
+        data=[GroupResponse.model_validate(g) for g in groups],
+    )
 
 
-async def get_group(db: AsyncSession, group_id: UUID, user_id: UUID) -> dict:
+async def get_group(
+    db: AsyncSession, group_id: UUID, user_id: UUID
+) -> SuccessResponse[GroupResponse]:
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
 
@@ -52,12 +57,14 @@ async def get_group(db: AsyncSession, group_id: UUID, user_id: UUID) -> dict:
     if not await member_repo.is_member(user_id, group_id):
         raise HTTPException(status_code=403, detail="Member is not authorised")
 
-    return {"message": "Group found", "group": GroupResponse.model_validate(group)}
+    return SuccessResponse(
+        message="Group found", data=GroupResponse.model_validate(group)
+    )
 
 
 async def update_group(
     db: AsyncSession, group_id: UUID, group_data: GroupUpdate, user_id: UUID
-) -> dict:
+) -> SuccessResponse[GroupResponse]:
     repo = GroupRepository(db)
 
     group = await repo.get_by_id(group_id)
@@ -71,13 +78,15 @@ async def update_group(
 
     updated_group = await repo.update(group, group_data.model_dump(exclude_unset=True))
 
-    return {
-        "message": "Group updated successfully",
-        "group": GroupResponse.model_validate(updated_group),
-    }
+    return SuccessResponse(
+        message="Group updated successfully",
+        data=GroupResponse.model_validate(updated_group),
+    )
 
 
-async def delete_group(group_id: UUID, user_id: UUID, db: AsyncSession) -> dict:
+async def delete_group(
+    group_id: UUID, user_id: UUID, db: AsyncSession
+) -> SuccessResponse[None]:
     repo = GroupRepository(db)
 
     group = await repo.get_by_id(group_id)
@@ -91,12 +100,12 @@ async def delete_group(group_id: UUID, user_id: UUID, db: AsyncSession) -> dict:
 
     await repo.delete(group)
 
-    return {"message": "Group deleted successfully"}
+    return SuccessResponse(message="Group deleted successfully", data=None)
 
 
 async def add_member(
     group_id: UUID, user_id: UUID, db: AsyncSession, current_user_id: UUID
-) -> dict:
+) -> SuccessResponse[GroupMemberResponse]:
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
 
@@ -115,15 +124,15 @@ async def add_member(
 
     member = await member_repo.add(user_id, group_id)
 
-    return {
-        "message": "Member added successfully",
-        "member": GroupMemberResponse.model_validate(member),
-    }
+    return SuccessResponse(
+        message="Member added successfully",
+        data=GroupMemberResponse.model_validate(member),
+    )
 
 
 async def remove_member(
     group_id: UUID, user_id: UUID, db: AsyncSession, current_user_id: UUID
-) -> dict:
+) -> SuccessResponse[None]:
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
 
@@ -140,10 +149,12 @@ async def remove_member(
 
     await member_repo.remove(member)
 
-    return {"message": "Member deleted successfully"}
+    return SuccessResponse(message="Member deleted successfully", data=None)
 
 
-async def list_members(group_id: UUID, db: AsyncSession, current_user_id: UUID) -> dict:
+async def list_members(
+    group_id: UUID, db: AsyncSession, current_user_id: UUID
+) -> SuccessResponse[list[GroupMemberResponse]]:
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
 
@@ -156,7 +167,7 @@ async def list_members(group_id: UUID, db: AsyncSession, current_user_id: UUID) 
 
     members = await member_repo.list_members(group_id)
 
-    return {
-        "message": "List of members fetched successfully",
-        "members": [GroupMemberResponse.model_validate(m) for m in members],
-    }
+    return SuccessResponse(
+        message="List of members fetched successfully",
+        data=[GroupMemberResponse.model_validate(m) for m in members],
+    )

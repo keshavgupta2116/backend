@@ -27,14 +27,14 @@ async def create(
 
 
 @router.get("/")
-async def list(
+async def list_users(
     db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)
 ):
     return await list_groups(db, user.id)
 
 
 @router.get("/{group_id}", response_model=GroupResponse)
-async def get(
+async def get_groups_by_user(
     group_id: UUID,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
@@ -43,7 +43,7 @@ async def get(
 
 
 @router.put("/{group_id}", response_model=GroupResponse)
-async def update(
+async def update_groups_by_user(
     group_id: UUID,
     group_data: GroupUpdate,
     db: AsyncSession = Depends(get_db),
@@ -53,7 +53,7 @@ async def update(
 
 
 @router.delete("/{group_id}", status_code=status.HTTP_200_OK)
-async def delete(
+async def delete_groups_by_user(
     group_id: UUID,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),

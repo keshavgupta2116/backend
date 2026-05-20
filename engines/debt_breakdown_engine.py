@@ -28,7 +28,7 @@ def build_debt_breakdown(
 
     For every split:
     - if the split user is NOT the payer,
-    then that user owes the payer their split amount.
+      then that user owes the payer their split amount.
 
     Returns a nested structure in the format:
 
@@ -48,16 +48,16 @@ def build_debt_breakdown(
     breakdown = defaultdict(lambda: defaultdict(list))
 
     for expense in expenses:
-        payed_by = expense["payer_id"]
+        paid_by = expense["paid_by"]
 
         for split in expense["splits"]:
             split_user_id = split["user_id"]
             amount = Decimal(split["amount"])
 
-            if split_user_id == payed_by:
+            if split_user_id == paid_by:
                 continue
 
-            breakdown[split_user_id][payed_by].append(
+            breakdown[split_user_id][paid_by].append(
                 {
                     "expense_id": expense["expense_id"],
                     "title": expense["title"],

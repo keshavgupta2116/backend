@@ -4,9 +4,9 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from routes.auth import router as auth_router
-from routes.groups import router as groups_router
 from routes.group_expenses import router as groups_expense_router
 from routes.group_member import router as group_member_router
+from routes.groups import router as groups_router
 from routes.users import router as users_router
 
 app = FastAPI(

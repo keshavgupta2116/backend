@@ -14,7 +14,7 @@ class GroupMemberRepository:
         member = GroupMember(group_id=group_id, user_id=user_id)
 
         self.session.add(member)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(member)
 
         return member
@@ -39,7 +39,7 @@ class GroupMemberRepository:
 
     async def remove_group_member(self, member: GroupMember) -> None:
         await self.session.delete(member)
-        await self.session.commit()
+         
 
     async def is_member(self, user_id: UUID, group_id: UUID) -> bool:
         result = await self.get(user_id, group_id)

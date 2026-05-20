@@ -13,7 +13,7 @@ class GroupRepository:
 
     async def create(self, group: Group) -> Group:
         self.session.add(group)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(group)
 
         return group
@@ -33,12 +33,10 @@ class GroupRepository:
     async def update(self, group: Group, data: dict) -> Group:
         for key, val in data.items():
             setattr(group, key, val)
-
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(group)
 
         return group
 
     async def delete(self, group: Group) -> None:
         await self.session.delete(group)
-        await self.session.commit()

@@ -21,7 +21,7 @@ async def create_group(
 
     created_group = await repo.create(group)
 
-    await member_repo.add(created_group.id, user_id)
+    await member_repo.add_group_member(created_group.id, user_id)
 
     return SuccessResponse(
         message="Group created successfully",

@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from models.expense_splits import ExpenseSplit
 from models.group_expenses import GroupExpense
@@ -19,7 +20,7 @@ class ExpenseRepository:
         for split in splits:
             self.session.add(split)
 
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(expense)
 
         return expense
@@ -42,14 +43,14 @@ class ExpenseRepository:
         for key, val in data.items():
             setattr(expense, key, val)
 
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(expense)
 
         return expense
 
     async def delete_expense(self, expense: GroupExpense) -> None:
         await self.session.delete(expense)
-        await self.session.commit()
+        
 
     async def get_splits(self, expense_id: UUID) -> list[ExpenseSplit]:
         result = await self.session.execute(
@@ -70,4 +71,15 @@ class ExpenseRepository:
             )
         )
 
-        return result.scalar_one_or_none() is None
+        return result.scalar_one_or_none() is not None
+
+    async def get_group_expense_with_splits(self, group_id: UUID) -> list[GroupExpense]:
+
+        exp = (
+            select(GroupExpense)
+            .where(GroupExpense.group_id == group_id)
+            .options(selectinload(GroupExpense.splits))
+        )
+
+        result = await self.session.execute(exp)
+        return result.scalars().unique().all()

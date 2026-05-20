@@ -129,3 +129,23 @@ def simplify_debt(aggregated_debt: dict) -> dict:
                 simplified_debt[debtor][creditor] = abs(amount - reverse_amount)
 
     return {debtor: dict(creditors) for debtor, creditors in simplified_debt.items()}
+
+
+def calculate_net_balance(aggregated_debt: dict, user_id: str) -> Decimal:
+    """
+    Calculates the net balance for a user from aggregated debt data.
+        expects:
+        {
+            debtor_id: {
+                creditor_id: Decimal
+                }
+        }
+    """
+    balance = Decimal(0)
+    for debtor, creditors in aggregated_debt.items():
+        for creditor, amount in creditors.items():
+            if debtor == user_id:
+                balance -= amount
+            elif creditor == user_id:
+                balance += amount
+    return balance

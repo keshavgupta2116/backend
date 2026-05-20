@@ -29,7 +29,7 @@ class PersonalExpenseRepository:
             .offset(skip)
             .limit(limit)
         )
-        return list(result.scalars().all())
+        return list(result.scalars().all()) #need to look at this for limit and offset 
 
     async def get_expense_by_id(
         self,
@@ -45,10 +45,10 @@ class PersonalExpenseRepository:
 
     async def update_expense(self, expense: PersonalExpense) -> PersonalExpense:
         self.session.add(expense)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(expense)
         return expense
 
     async def delete_expense(self, expense: PersonalExpense) -> None:
         await self.session.delete(expense)
-        await self.session.commit()
+        

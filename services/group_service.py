@@ -16,13 +16,9 @@ async def create_group(
 ) -> SuccessResponse[GroupResponse]:
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
-
     group = Group(name=group_data.name, created_by=user_id)
-
     created_group = await repo.create(group)
-
-    await member_repo.add_group_member(created_group.id, user_id)
-
+    await member_repo.add_group_member(user_id, created_group.id)
     return SuccessResponse(
         message="Group created successfully",
         data=GroupResponse.model_validate(created_group),

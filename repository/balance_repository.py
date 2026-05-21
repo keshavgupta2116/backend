@@ -17,7 +17,6 @@ class BalanceRepository:
     async def get_expenses_paid_by_user(
         self, user_id: UUID, group_id: UUID
     ) -> list[GroupExpense]:
-
         result = await self.session.execute(
             select(GroupExpense)
             .options(selectinload(GroupExpense.splits))
@@ -32,7 +31,6 @@ class BalanceRepository:
     async def get_user_splits(
         self, user_id: UUID, group_id: UUID
     ) -> list[ExpenseSplit]:
-
         result = await self.session.execute(
             select(ExpenseSplit)
             .join(GroupExpense, ExpenseSplit.expense_id == GroupExpense.id)
@@ -48,7 +46,6 @@ class BalanceRepository:
     async def get_payments_made(
         self, user_id: UUID, group_id: UUID
     ) -> list[Settlement]:
-
         result = await self.session.execute(
             select(Settlement).where(
                 Settlement.group_id == group_id,
@@ -61,7 +58,6 @@ class BalanceRepository:
     async def get_payments_received(
         self, user_id: UUID, group_id: UUID
     ) -> list[Settlement]:
-
         result = await self.session.execute(
             select(Settlement).where(
                 Settlement.group_id == group_id,
@@ -72,7 +68,6 @@ class BalanceRepository:
         return result.scalars().all()
 
     async def get_personal_expenses(self, user_id: UUID) -> list[PersonalExpense]:
-
         result = await self.session.execute(
             select(PersonalExpense).where(PersonalExpense.user_id == user_id)
         )

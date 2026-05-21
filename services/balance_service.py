@@ -38,7 +38,6 @@ class BalanceService:
         return balances
 
     async def track_debts(self, user_id: UUID, group_id: UUID) -> dict[UUID, Decimal]:
-
         balances = await self.calculate_balance(user_id, group_id)
 
         payments_made = await self.repo.get_payments_made(user_id, group_id)
@@ -60,7 +59,6 @@ class BalanceService:
         return {uid: amt for uid, amt in balances.items() if amt != Decimal("0")}
 
     async def aggregate_totals(self, user_id: UUID) -> dict[str, Decimal]:
-
         expenses = await self.repo.get_personal_expenses(user_id)
 
         totals: dict[str, Decimal] = {}

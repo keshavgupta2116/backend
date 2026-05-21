@@ -16,13 +16,9 @@ async def create_group(
 ) -> SuccessResponse[GroupResponse]:
     repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
-
     group = Group(name=group_data.name, created_by=user_id)
-
     created_group = await repo.create(group)
-
-    await member_repo.add(created_group.id, user_id)
-
+    await member_repo.add_group_member(user_id, created_group.id)
     return SuccessResponse(
         message="Group created successfully",
         data=GroupResponse.model_validate(created_group),
@@ -119,15 +115,15 @@ async def add_member(
     user_id = user.id
 
     if not await member_repo.is_member(current_user_id, group_id):
-        raise HTTPException(status_code=403, detail="Member is not authorised")
+        raise HTTPException(status_code=403, detail="Member is not authorized")
 
-    existing_user = await member_repo.get(user_id, group_id)
+    existing_user = await member_repo.get_group_member(user_id, group_id)
     if existing_user:
         raise HTTPException(
             status_code=400, detail="User is already existing in the group"
         )
 
-    member = await member_repo.add(user_id, group_id)
+    member = await member_repo.add_group_member(user_id, group_id)
 
     return SuccessResponse(
         message="Member added successfully",
@@ -150,11 +146,11 @@ async def remove_member(
 
     # Adding function from balance_repository.py
 
-    member = await member_repo.get(user_id, group_id)
+    member = await member_repo.get_group_member(user_id, group_id)
     if not member:
         raise HTTPException(status_code=404, detail="Member not found")
 
-    await member_repo.remove(member)
+    await member_repo.remove_group_member(member)
 
     return SuccessResponse(message="Member deleted successfully", data=None)
 
@@ -172,7 +168,7 @@ async def list_members(
     if not await member_repo.is_member(current_user_id, group_id):
         raise HTTPException(status_code=403, detail="Member is not authorised")
 
-    members = await member_repo.list_members(group_id)
+    members = await member_repo.list_group_members(group_id)
 
     return SuccessResponse(
         message="List of members fetched successfully",

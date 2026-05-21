@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy import select
@@ -12,11 +13,14 @@ class ExpenseRepository:
         self.session = session
 
     async def create_expense(
-        self, expense: GroupExpense, splits: list[ExpenseSplit]
+        self, expense: GroupExpense, splits_dict: dict[UUID, Decimal]
     ) -> GroupExpense:
         self.session.add(expense)
+        await self.session.flush()
 
-        for split in splits:
+        # Create splits with the expense ID
+        for user_id, amount in splits_dict.items():
+            split = ExpenseSplit(expense_id=expense.id, user_id=user_id, amount=amount)
             self.session.add(split)
 
         await self.session.commit()
@@ -59,7 +63,6 @@ class ExpenseRepository:
         return list(result.scalars().all())
 
     async def has_pending_balance(self, group_id: UUID, user_id: UUID) -> bool:
-
         result = await self.session.execute(
             select(ExpenseSplit)
             .join(GroupExpense, ExpenseSplit.expense_id == GroupExpense.id)

@@ -11,7 +11,6 @@ def calculate_splits(
     splits_input: dict[UUID, Decimal] | None = None,
     equal_member_ids: list[UUID] | None = None,
 ) -> dict[UUID, Decimal]:
-
     if split_type == "equal":
         if equal_member_ids:
             invalid = set(equal_member_ids) - set(all_members_id)

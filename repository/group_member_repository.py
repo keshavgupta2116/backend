@@ -42,5 +42,5 @@ class GroupMemberRepository:
         await self.session.commit()
 
     async def is_member(self, user_id: UUID, group_id: UUID) -> bool:
-        result = await self.get(user_id, group_id)
+        result = await self.get_group_member(user_id, group_id)
         return result is not None

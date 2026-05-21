@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user, get_db
 from models.user import User
+from schemas.common import SuccessResponse
 from schemas.expense_split import (
     ExpenseCreate,
     ExpenseResponse,
@@ -23,7 +24,7 @@ router = APIRouter(prefix="/groups", tags=["Group Expenses"])
 
 @router.post(
     "/{group_id}/expenses",
-    response_model=ExpenseResponse,
+    response_model=SuccessResponse[ExpenseResponse],
     status_code=status.HTTP_201_CREATED,
 )
 async def create_expense_in_group(
@@ -35,7 +36,9 @@ async def create_expense_in_group(
     return await create_expenses(user.id, db, group_id, expense_data)
 
 
-@router.get("/{group_id}/expenses")
+@router.get(
+    "/{group_id}/expenses", response_model=SuccessResponse[list[ExpenseResponse]]
+)
 async def list_expenses(
     group_id: UUID,
     db: AsyncSession = Depends(get_db),

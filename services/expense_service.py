@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engines.split_engine import calculate_splits
-from models.group_expenses import GroupExpense
+from models.group_expenses import GroupExpense, SplitType
 from repository.expense_repository import ExpenseRepository
 from repository.group_member_repository import GroupMemberRepository
 from repository.group_repository import GroupRepository
@@ -20,8 +20,7 @@ from schemas.expense_split import (
 
 async def create_expenses(
     paid_by: UUID, db: AsyncSession, group_id: UUID, expense_data: ExpenseCreate
-) -> dict:
-
+) -> SuccessResponse[ExpenseResponse]:
     expense_repo = ExpenseRepository(db)
     group_repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
@@ -36,12 +35,12 @@ async def create_expenses(
     members = await member_repo.list_group_members(group_id)
     members_ids: list[UUID] = [m.user_id for m in members]
 
-    splits = calculate_splits(
+    splits_dict = calculate_splits(
         total_amount=Decimal(str(expense_data.amount)),
         all_members_id=members_ids,
         split_type=expense_data.split_type,
         splits_input=expense_data.splits_input,
-        equal_member_ids=expense_data.splits_input,
+        equal_member_ids=expense_data.equal_member_ids,
     )
 
     expense = GroupExpense(
@@ -49,19 +48,18 @@ async def create_expenses(
         title=expense_data.title,
         paid_by=paid_by,
         amount=expense_data.amount,
-        split_type=expense_data.split_type,
+        split_type=SplitType(expense_data.split_type),
     )
 
-    created_expense = await expense_repo.create_expense(expense, splits)
+    created_expense = await expense_repo.create_expense(expense, splits_dict)
 
     return SuccessResponse(
-        message="Expense created succesfully",
+        message="Expense created successfully",
         data=ExpenseResponse.model_validate(created_expense),
     )
 
 
 async def list_expense(group_id: UUID, current_user_id: UUID, db: AsyncSession) -> dict:
-
     expense_repo = ExpenseRepository(db)
     group_repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
@@ -84,7 +82,6 @@ async def list_expense(group_id: UUID, current_user_id: UUID, db: AsyncSession) 
 async def get_expense(
     expense_id: UUID, group_id: UUID, current_user_id: UUID, db: AsyncSession
 ) -> dict:
-
     expense_repo = ExpenseRepository(db)
     member_repo = GroupMemberRepository(db)
 
@@ -113,7 +110,6 @@ async def update_expense_by_id(
     current_user_id: UUID,
     db: AsyncSession,
 ) -> dict:
-
     expense_repo = ExpenseRepository(db)
     group_repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
@@ -147,7 +143,6 @@ async def update_expense_by_id(
 async def delete_expense_by_id(
     expense_id: UUID, group_id: UUID, current_user_id: UUID, db: AsyncSession
 ) -> dict:
-
     expense_repo = ExpenseRepository(db)
     group_repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)

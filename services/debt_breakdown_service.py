@@ -3,6 +3,7 @@ from uuid import UUID
 from engines.debt_breakdown_engine import (
     aggregate_debt,
     build_debt_breakdown,
+    settle_debts,
     simplify_debt,
 )
 from repository.expense_repository import ExpenseRepository
@@ -33,9 +34,11 @@ class DebtBreakdownService:
         breakdown = build_debt_breakdown(engine_input)
         aggregated = aggregate_debt(breakdown)
         simplified = simplify_debt(aggregated)
+        settled = settle_debts(simplified)
 
         return {
             "breakdown": breakdown,
             "aggregated": aggregated,
             "simplified": simplified,
+            "settled": settled,
         }

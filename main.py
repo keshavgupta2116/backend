@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -17,6 +18,14 @@ app = FastAPI(
     redoc_url=None,
 )
 FAVICON_URL = "/static/EvenUp-white.svg"
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://localhost:3000"],        
+    allow_credentials=True,
+    allow_methods=["*"],        
+    allow_headers=["*"],        
+)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

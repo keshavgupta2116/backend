@@ -76,6 +76,7 @@ def home():
 # def reset_password():
 #     return FileResponse("templates/password-reset.html")
 
+
 @app.get("/reset-password")
 def reset_password():
     return FileResponse("templates/password-reset.html")

@@ -214,7 +214,7 @@ async def send_reset_email(to_email: str, raw_token: str):
     try:
         resend.Emails.send(
             {
-                "from": f"EvenUp <{RESEND_FROM}>",
+                "from": f"Evven <{RESEND_FROM}>",
                 "to": [to_email],
                 "subject": "Reset Your Password",
                 "html": html_content,

@@ -12,7 +12,7 @@ from routes.groups import router as groups_router
 from routes.users import router as users_router
 
 app = FastAPI(
-    title="EvenUp API",
+    title="Evven API",
     description="API for Group and Personal Expense Management",
     version="0.0.1",
     docs_url=None,
@@ -25,7 +25,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://localhost:3000",
-        "https://useevenup.vercel.app",
+        "https://evven.xyz",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -39,7 +39,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def custom_swagger_ui():
     return get_swagger_ui_html(
         openapi_url=app.openapi_url,
-        title="EvenUp Docs",
+        title="Evven Docs",
         swagger_favicon_url=FAVICON_URL,
     )
 
@@ -48,7 +48,7 @@ async def custom_swagger_ui():
 async def redoc_html():
     return get_redoc_html(
         openapi_url=app.openapi_url,
-        title="EvenUp ReDoc",
+        title="Evven ReDoc",
         redoc_favicon_url=FAVICON_URL,
     )
 

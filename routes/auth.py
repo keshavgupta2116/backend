@@ -109,4 +109,5 @@ async def update_password(
 
 @router.get("/reset-password")
 def reset_password_page(token: str):
+
     return FileResponse("templates/password-reset.html")

@@ -70,5 +70,3 @@ def health():
 @app.get("/")
 def home():
     return FileResponse("templates/index.html")
-
-

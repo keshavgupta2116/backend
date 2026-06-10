@@ -1,10 +1,7 @@
 import hashlib
-import os
 import secrets
 from datetime import datetime, timedelta, timezone
-from email.message import EmailMessage
 from pathlib import Path
-
 
 import resend
 from fastapi import HTTPException  # type: ignore
@@ -17,10 +14,9 @@ from core.config import (
     ALGORITHM,
     BACKEND_URL,
     REFRESH_TOKEN_EXPIRE_DAYS,
+    RESEND_API_KEY,
     RESEND_FROM,
     SECRET_KEY,
-    RESEND_API_KEY,
-    
 )
 from models.user import AuthProvider, User
 from repository.user_repository import AuthRepository, UserRepository
@@ -164,16 +160,12 @@ async def request_password_reset(email: str, db: AsyncSession):
 
     if not user:
         raise HTTPException(
-            status_code=404,
-            detail="No account found with that email address"
+            status_code=404, detail="No account found with that email address"
         )
 
     if user.auth_provider != AuthProvider.LOCAL:
-        raise HTTPException(
-            status_code=400,
-            detail="This account uses Google Sign-In"
-        )
-    
+        raise HTTPException(status_code=400, detail="This account uses Google Sign-In")
+
     raw_token = secrets.token_urlsafe(32)
     token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
     expire_at = datetime.now(timezone.utc) + timedelta(minutes=10)
@@ -183,15 +175,9 @@ async def request_password_reset(email: str, db: AsyncSession):
     email_sent = await send_reset_email(user.email, raw_token)
 
     if not email_sent:
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to send reset email"
-        )
+        raise HTTPException(status_code=500, detail="Failed to send reset email")
 
-    return {
-        "success": True,
-        "message": "Reset email sent"
-    }
+    return {"success": True, "message": "Reset email sent"}
 
 
 async def reset_password(token: str, new_password: str, db: AsyncSession):

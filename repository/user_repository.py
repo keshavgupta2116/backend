@@ -71,7 +71,7 @@ class AuthRepository:
         result = await self.session.execute(
             select(PasswordResetToken).where(
                 PasswordResetToken.token_hash == token_hash,
-                PasswordResetToken.used == False,
+                not PasswordResetToken.used,
                 PasswordResetToken.expires_at > datetime.now(timezone.utc),
             )
         )
@@ -82,14 +82,14 @@ class AuthRepository:
         await self.session.commit()
 
     async def delete_token(self, user_id: UUID) -> None:
-        #removed all used tokens for a user.
+        # removed all used tokens for a user.
         result = await self.session.execute(
             select(PasswordResetToken).where(
                 PasswordResetToken.user_id == user_id,
-                PasswordResetToken.used == True,
+                PasswordResetToken.used,
             )
         )
-        
+
         for record in result.scalars().all():
             await self.session.delete(record)
         await self.session.commit()

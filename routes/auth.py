@@ -88,13 +88,15 @@ async def logout(user: User = Depends(get_current_user)):
     return {"message": "Logged out successfully"}
 
 
-@router.get("/forgot-password" , include_in_schema=False)
+@router.get("/forgot-password", include_in_schema=False)
 def forget_password():
     return FileResponse("templates/forget-password.html")
 
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
-async def request_password(body: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+async def request_password(
+    body: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)
+):
     return await request_password_reset(body.email, db)
 
 
@@ -103,6 +105,7 @@ async def update_password(
     body: ResetPasswordRequest, db: AsyncSession = Depends(get_db)
 ):
     return await reset_password(body.token, body.password, db)
+
 
 @router.get("/reset-password")
 def reset_password_page(token: str):

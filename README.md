@@ -2,7 +2,7 @@ this is a very initial draft consider it as a v0.0.-1
 and claude wrote it sooooo......🤞
 
 also backend is up on 
-[https://evenup-backend.onrender.com](https://evenup-backend.onrender.com)
+[https://api.evven.xyz](https://api.evven.xyz)
 
 
 added an uptime bot and the results are on this 

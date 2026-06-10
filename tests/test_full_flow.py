@@ -88,7 +88,7 @@ async def test_full_group_expense_flow_covers_all_split_types_and_access_leaks()
     transport = ASGITransport(app=app)
 
     async with AsyncClient(
-        transport=transport, base_url="https://evenup-backend.onrender.com/"
+        transport=transport, base_url="https://api.evven.xyz/"
     ) as client:
         members = [
             await register_user(

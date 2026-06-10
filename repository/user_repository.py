@@ -72,7 +72,7 @@ class AuthRepository:
             select(PasswordResetToken).where(
                 PasswordResetToken.token_hash == token_hash,
                 not PasswordResetToken.used,
-                PasswordResetToken.expires_at > datetime.now(timezone.utc),
+                PasswordResetToken.expire_at > datetime.now(timezone.utc),
             )
         )
         return result.scalar_one_or_none()

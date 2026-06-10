@@ -47,6 +47,7 @@ app.include_router(group_member_router)
 app.include_router(groups_expense_router)
 app.include_router(personal_expenses_router)
 
+
 @app.get("/health")
 @app.head("/health")
 def health():

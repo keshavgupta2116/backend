@@ -9,6 +9,7 @@ from routes.debt_breakdown import router as debt_breakdown_router
 from routes.group_expenses import router as groups_expense_router
 from routes.group_member import router as group_member_router
 from routes.groups import router as groups_router
+from routes.personal_expenses import router as personal_expenses_router
 from routes.users import router as users_router
 
 app = FastAPI(
@@ -58,6 +59,7 @@ app.include_router(users_router)
 app.include_router(groups_router)
 app.include_router(group_member_router)
 app.include_router(groups_expense_router)
+app.include_router(personal_expenses_router)
 app.include_router(debt_breakdown_router)
 
 

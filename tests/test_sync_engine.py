@@ -1,8 +1,10 @@
 from decimal import Decimal
 from uuid import uuid4
 
-from engines.sync_engine import compute_personal_records_for_expense, diff_personal_records
-
+from engines.sync_engine import (
+    compute_personal_records_for_expense,
+    diff_personal_records,
+)
 
 # ── compute_personal_records_for_expense ─────────────────────────────────────
 
@@ -164,7 +166,9 @@ def test_all_new_users_go_into_to_create():
         },
     ]
 
-    to_create, to_update, to_delete = diff_personal_records(existing=[], desired=desired)
+    to_create, to_update, to_delete = diff_personal_records(
+        existing=[], desired=desired
+    )
 
     assert len(to_create) == 2
     assert to_update == []
@@ -176,7 +180,12 @@ def test_unchanged_record_produces_no_diff():
     record_id = uuid4()
 
     existing = [
-        {"id": record_id, "user_id": user_a, "title": "Dinner", "amount": Decimal("100.00")}
+        {
+            "id": record_id,
+            "user_id": user_a,
+            "title": "Dinner",
+            "amount": Decimal("100.00"),
+        }
     ]
     desired = [
         {
@@ -200,7 +209,12 @@ def test_amount_change_triggers_update():
     record_id = uuid4()
 
     existing = [
-        {"id": record_id, "user_id": user_a, "title": "Dinner", "amount": Decimal("100.00")}
+        {
+            "id": record_id,
+            "user_id": user_a,
+            "title": "Dinner",
+            "amount": Decimal("100.00"),
+        }
     ]
     desired = [
         {
@@ -226,7 +240,12 @@ def test_title_change_triggers_update():
     record_id = uuid4()
 
     existing = [
-        {"id": record_id, "user_id": user_a, "title": "Old Title", "amount": Decimal("50.00")}
+        {
+            "id": record_id,
+            "user_id": user_a,
+            "title": "Old Title",
+            "amount": Decimal("50.00"),
+        }
     ]
     desired = [
         {
@@ -253,8 +272,18 @@ def test_user_removed_from_split_goes_into_to_delete():
     record_b_id = uuid4()
 
     existing = [
-        {"id": record_a_id, "user_id": user_a, "title": "Trip", "amount": Decimal("100.00")},
-        {"id": record_b_id, "user_id": user_b, "title": "Trip", "amount": Decimal("100.00")},
+        {
+            "id": record_a_id,
+            "user_id": user_a,
+            "title": "Trip",
+            "amount": Decimal("100.00"),
+        },
+        {
+            "id": record_b_id,
+            "user_id": user_b,
+            "title": "Trip",
+            "amount": Decimal("100.00"),
+        },
     ]
     # user_b removed from split
     desired = [
@@ -283,7 +312,12 @@ def test_new_user_added_to_split_goes_into_to_create():
     expense_id = uuid4()
 
     existing = [
-        {"id": record_a_id, "user_id": user_a, "title": "Trip", "amount": Decimal("100.00")}
+        {
+            "id": record_a_id,
+            "user_id": user_a,
+            "title": "Trip",
+            "amount": Decimal("100.00"),
+        }
     ]
     desired = [
         {
@@ -321,9 +355,19 @@ def test_full_replacement_all_three_buckets_populated():
 
     existing = [
         # user_a: amount will change → to_update
-        {"id": record_a_id, "user_id": user_a, "title": "Goa Trip", "amount": Decimal("200.00")},
+        {
+            "id": record_a_id,
+            "user_id": user_a,
+            "title": "Goa Trip",
+            "amount": Decimal("200.00"),
+        },
         # user_b: no longer in split → to_delete
-        {"id": record_b_id, "user_id": user_b, "title": "Goa Trip", "amount": Decimal("200.00")},
+        {
+            "id": record_b_id,
+            "user_id": user_b,
+            "title": "Goa Trip",
+            "amount": Decimal("200.00"),
+        },
     ]
     desired = [
         # user_a: updated amount

@@ -75,7 +75,7 @@ class ExpenseRepository:
         )
 
         return result.scalar_one_or_none() is None
-    
+
     async def get_expense_paid_by_user(
         self, group_id: UUID, user_id: UUID, limit: 20
     ) -> list[ExpensePaidResponse]:
@@ -87,7 +87,9 @@ class ExpenseRepository:
         )
         return list(result.scalars().all())
 
-    async def get_expense_owed_user(self, user_id: UUID, limit: 20) -> list[ExpenseOweResponse]:
+    async def get_expense_owed_user(
+        self, user_id: UUID, limit: 20
+    ) -> list[ExpenseOweResponse]:
         result = await self.session.execute(
             select(ExpenseSplit).where(ExpenseSplit.user_id == user_id).limit(limit)
         )

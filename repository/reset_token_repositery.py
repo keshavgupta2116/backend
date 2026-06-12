@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
-from sqlalchemy import delete, select  # type: ignore
+from sqlalchemy import delete, or_, select  # type: ignore
 from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
 from models.password_reset_token import PasswordResetToken
@@ -43,8 +43,10 @@ class ResetRepositery:
         # removed all used tokens for a user.
         await self.session.execute(
             delete(PasswordResetToken).where(
-                PasswordResetToken.expire_at < datetime.now(timezone.utc),
-                PasswordResetToken.used.is_(True),
+                or_(
+                    PasswordResetToken.expire_at < datetime.now(timezone.utc),
+                    PasswordResetToken.used.is_(True),
+                )
             )
         )
         await self.session.commit()

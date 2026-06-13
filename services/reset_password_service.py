@@ -22,7 +22,7 @@ resend.api_key = RESEND_API_KEY
 
 async def request_password_reset(email: str, db: AsyncSession):
     repo = UserRepository(db)
-    repo_auth = ResetRepositery(db)
+    repo_reset = ResetRepositery(db)
     user = await repo.get_user_by_email(email)
 
     if not user:
@@ -37,7 +37,7 @@ async def request_password_reset(email: str, db: AsyncSession):
     token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
     expire_at = datetime.now(timezone.utc) + timedelta(minutes=10)
 
-    await repo_auth.save_reset_token(user.id, token_hash, expire_at)
+    await repo_reset.save_reset_token(user.id, token_hash, expire_at)
 
     email_sent = await send_reset_email(user.email, raw_token)
 
@@ -48,10 +48,10 @@ async def request_password_reset(email: str, db: AsyncSession):
 
 
 async def reset_password(token: str, new_password: str, db: AsyncSession):
-    repo_auth = ResetRepositery(db)
+    repo_reset = ResetRepositery(db)
     token_hash = hashlib.sha256(token.encode()).hexdigest()
 
-    reset_record = await repo_auth.get_valid_reset_token(token_hash)
+    reset_record = await repo_reset.get_valid_reset_token(token_hash)
 
     if not reset_record:
         raise HTTPException(status_code=400, detail="Invalid or expired token")
@@ -61,7 +61,9 @@ async def reset_password(token: str, new_password: str, db: AsyncSession):
     user.password_hash = hash_password(new_password)
     await repo.update_user(user)
 
-    await repo_auth.mark_token_as_used(reset_record)
+    await repo_reset.mark_token_as_used(reset_record)
+
+    await repo_reset.delete_token()
 
     return {"message": "Password reset successfully"}
 

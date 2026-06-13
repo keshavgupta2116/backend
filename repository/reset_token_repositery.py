@@ -40,7 +40,7 @@ class ResetRepositery:
         await self.session.commit()
 
     async def delete_token(self):
-        # removed all used tokens for a user.
+        # removed all used or expired tokens for a user.
         await self.session.execute(
             delete(PasswordResetToken).where(
                 or_(
@@ -50,14 +50,3 @@ class ResetRepositery:
             )
         )
         await self.session.commit()
-
-        # result = await self.session.execute(
-        #     select(PasswordResetToken).where(
-        #         PasswordResetToken.user_id == user_id,
-        #         PasswordResetToken.used.is_(True),
-        #     )
-        # )
-
-        # for record in result.scalars().all():
-        #     await self.session.delete(record)
-        # await self.session.commit()

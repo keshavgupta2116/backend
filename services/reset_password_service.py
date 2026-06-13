@@ -11,6 +11,7 @@ from core.config import (
     BACKEND_URL,
     RESEND_API_KEY,
     RESEND_FROM,
+    RESET_TOKEN_EXPIRE_MINUTES,
 )
 from models.user import AuthProvider
 from repository.reset_token_repositery import ResetRepositery
@@ -35,7 +36,9 @@ async def request_password_reset(email: str, db: AsyncSession):
 
     raw_token = secrets.token_urlsafe(32)
     token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-    expire_at = datetime.now(timezone.utc) + timedelta(minutes=10)
+    expire_at = datetime.now(timezone.utc) + timedelta(
+        minutes=RESET_TOKEN_EXPIRE_MINUTES
+    )
 
     await repo_reset.save_reset_token(user.id, token_hash, expire_at)
 

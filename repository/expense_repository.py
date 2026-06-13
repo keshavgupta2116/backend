@@ -3,6 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from models.expense_splits import ExpenseSplit
 from models.group_expenses import GroupExpense
@@ -92,5 +93,13 @@ class ExpenseRepository:
     ) -> list[ExpenseOweResponse]:
         result = await self.session.execute(
             select(ExpenseSplit).where(ExpenseSplit.user_id == user_id).limit(limit)
+        )
+        return list(result.scalars().all())
+
+    async def get_group_expense_with_splits(self, group_id: UUID) -> list[GroupExpense]:
+        result = await self.session.execute(
+            select(GroupExpense)
+            .options(selectinload(GroupExpense.splits))
+            .where(GroupExpense.group_id == group_id)
         )
         return list(result.scalars().all())

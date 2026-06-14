@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from models.group_members import GroupMember
 
@@ -23,16 +24,18 @@ class GroupMemberRepository:
         self, user_id: UUID, group_id: UUID
     ) -> GroupMember | None:
         result = await self.session.execute(
-            select(GroupMember).where(
-                GroupMember.user_id == user_id, GroupMember.group_id == group_id
-            )
+            select(GroupMember)
+            .options(selectinload(GroupMember.user))
+            .where(GroupMember.user_id == user_id, GroupMember.group_id == group_id)
         )
 
         return result.scalar_one_or_none()
 
     async def list_group_members(self, group_id: UUID) -> list[GroupMember]:
         result = await self.session.execute(
-            select(GroupMember).where(GroupMember.group_id == group_id)
+            select(GroupMember)
+            .options(selectinload(GroupMember.user))
+            .where(GroupMember.group_id == group_id)
         )
 
         return list(result.scalars().all())

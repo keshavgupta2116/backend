@@ -127,7 +127,10 @@ async def add_member(
             status_code=400, detail="User is already existing in the group"
         )
 
-    member = await member_repo.add_group_member(user_id, group_id)
+    await member_repo.add_group_member(user_id, group_id)
+    member = await member_repo.get_group_member(user_id, group_id)
+    if not member:
+        raise HTTPException(status_code=500, detail="Member could not be loaded")
 
     return SuccessResponse(
         message="Member added successfully",

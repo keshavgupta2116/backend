@@ -12,6 +12,23 @@ from schemas.common import SuccessResponse
 from schemas.groups import GroupCreate, GroupMemberResponse, GroupResponse, GroupUpdate
 
 
+async def _can_access_group(
+    group: Group, user_id: UUID, member_repo: GroupMemberRepository
+) -> bool:
+    return group.created_by == user_id or await member_repo.is_member(user_id, group.id)
+
+
+def _member_response_data(member) -> dict:
+    return {
+        "id": member.id,
+        "name": member.user.name if member.user else str(member.user_id)[:8],
+        "group_id": member.group_id,
+        "user_id": member.user_id,
+        "joined_at": member.joined_at,
+    }
+    #just adding to get the frontend working we can remove it late
+
+
 async def create_group(
     group_data: GroupCreate, db: AsyncSession, user_id: UUID
 ) -> SuccessResponse[GroupResponse]:
@@ -52,7 +69,7 @@ async def get_group(
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
 
-    if not await member_repo.is_member(user_id, group_id):
+    if not await _can_access_group(group, user_id, member_repo):
         raise HTTPException(status_code=403, detail="Member is not authorised")
 
     return SuccessResponse(
@@ -118,7 +135,7 @@ async def add_member(
 
     user_id = user.id
 
-    if not await member_repo.is_member(current_user_id, group_id):
+    if not await _can_access_group(group, current_user_id, member_repo):
         raise HTTPException(status_code=403, detail="Member is not authorized")
 
     existing_user = await member_repo.get_group_member(user_id, group_id)
@@ -127,11 +144,14 @@ async def add_member(
             status_code=400, detail="User is already existing in the group"
         )
 
-    member = await member_repo.add_group_member(user_id, group_id)
+    await member_repo.add_group_member(user_id, group_id)
+    member = await member_repo.get_group_member(user_id, group_id)
+    if not member:
+        raise HTTPException(status_code=500, detail="Member could not be loaded")
 
     return SuccessResponse(
         message="Member added successfully",
-        data=GroupMemberResponse.model_validate(member),
+        data=GroupMemberResponse.model_validate(_member_response_data(member)),
     )
 
 
@@ -146,7 +166,7 @@ async def remove_member(
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
 
-    if not await member_repo.is_member(current_user_id, group_id):
+    if not await _can_access_group(group, current_user_id, member_repo):
         raise HTTPException(status_code=403, detail="Member is not authorised")
 
     member = await member_repo.get_group_member(user_id, group_id)
@@ -174,12 +194,15 @@ async def list_members(
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
 
-    if not await member_repo.is_member(current_user_id, group_id):
+    if not await _can_access_group(group, current_user_id, member_repo):
         raise HTTPException(status_code=403, detail="Member is not authorised")
 
     members = await member_repo.list_group_members(group_id)
 
     return SuccessResponse(
         message="List of members fetched successfully",
-        data=[GroupMemberResponse.model_validate(m) for m in members],
+        data=[
+            GroupMemberResponse.model_validate(_member_response_data(m))
+            for m in members
+        ],
     )

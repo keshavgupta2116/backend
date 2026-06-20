@@ -17,8 +17,9 @@ from schemas.common import SuccessResponse
 
 
 class DebtBreakdownService:
-    def __init__(self, expense_repository: ExpenseRepository):
+    def __init__(self, expense_repository: ExpenseRepository, settlement_repository: SettlementRepository,):
         self.expense_repository = expense_repository
+        self.settlement_repository = settlement_repository
 
     def _build_engine_input(self, expenses) -> list[dict]:
         return [
@@ -57,7 +58,7 @@ async def get_user_debt_breakdown(
     member_repo = GroupMemberRepository(db)
     group_repo = GroupRepository(db)
     expense_repo = ExpenseRepository(db)
-    settlement_repo = SettlementRepository(db) 
+    settlement_repo = SettlementRepository(db)
 
     if not await member_repo.is_member(current_user_id, group_id):
         raise HTTPException(status_code=403, detail="Member is not authorised")

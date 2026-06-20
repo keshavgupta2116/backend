@@ -22,7 +22,12 @@ class ExpenseRepository:
 
         # Create splits with the expense ID
         for user_id, amount in splits_dict.items():
-            split = ExpenseSplit(expense_id=expense.id, user_id=user_id, amount=amount)
+            split = ExpenseSplit(
+                expense_id=expense.id,
+                user_id=user_id,
+                amount=amount,
+                category=expense.category,
+            )
             self.session.add(split)
 
         await self.session.commit()

@@ -23,6 +23,7 @@ class GroupExpense(Base):
     group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id"), nullable=False)
     title = Column(String, nullable=False)
     amount = Column(Numeric(10, 2), nullable=False)
+    category = Column(String, nullable=True)
     paid_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     split_type = Column(
         SQLEnum(SplitType), nullable=False, default=SplitType.EQUAL

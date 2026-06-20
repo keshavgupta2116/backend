@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, ForeignKey, Numeric
+from sqlalchemy import Column, ForeignKey, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -16,6 +16,7 @@ class ExpenseSplit(Base):
     )
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     amount = Column(Numeric(10, 2), nullable=False)
+    category = Column(String, nullable=True)
 
     # relationships
     expense = relationship("GroupExpense", back_populates="splits")
